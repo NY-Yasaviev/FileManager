@@ -30,13 +30,13 @@ $ open _path to file_ - Открывает (двойной клик по фай�
 open MyTXTFile.txt 
 Надстройки:
 $$ open add _keyword_ - Добавление возможности открытия по ключевому слову. Сначала проверяет, что такое ключевое слово не занято.
-Если оно свободно, просит ввести путь до файла.
+Если оно свободно, просит ввести путь до файла. Кдючевыми словами не могут быть команды настроек. Ключи не чувствительны к регистру.
 Пример:
 open add english
 Введите путь(абсолютный) до файла: C:\\Users\\User\Documents\English\Book.pdf
 open english 
 $$ open edit _keyword_ - Изменение пути до файла, который открывается по этому ключевому слову. Сначала проверяет, что такое ключевое слово есть.
-Если оно есть, то просит ввести новый путь до файла.
+Если оно есть, то просит ввести новый путь до файла. 
 Пример:
 open edit english
 Введите новый путь(абсолютный) до файла: C:\\Users\\User\Documents\English\Workbook.pdf
@@ -52,7 +52,7 @@ $ rmdir _dirname_ - Удаляет всю директорию (т.е. влож�
 Пример:
 rmdir MyDir
 """
-bad_msg = "Что-то пошло не так"
+bad_msg = "Что-то пошло не так..."
 print(help_text)
 
 work = True
@@ -65,7 +65,7 @@ while work:
     request = input(os.path.abspath(os.curdir) + ">>").split()
     if request[COMMAND] == "cat":
         try:
-            file = open(request[PATH], 'r')
+            file = open(os.path.join(os.curdir, request[PATH]), 'r')
             data = file.readlines()
             for row in data:
                 print(row)
@@ -99,7 +99,7 @@ while work:
             print(bad_msg)
     elif request[COMMAND] == "mk":
         try:
-            open(request[PATH],'w').close()
+            open(os.path.join(os.curdir, request[PATH]),'w').close()
         except:
             print(bad_msg)
     elif request[COMMAND] == "mkdir":
@@ -108,14 +108,72 @@ while work:
         except:
             print(bad_msg)
     elif request[COMMAND] == "open":
-        os.startfile(request[PATH], 'open')
+        try:
+            key = 0
+            key_path = 1
+            db = open("DataBase.txt")
+            data = db.readlines()
+            keys = []
+            for row in data:
+                keys.append(row.lower().split()[key])
+            if request[PATH] == "add":
+                if request[KEY] in keys:
+                    print("Ключ уже занят. Придумайте новый ключ и повторите попытку.")
+                else:
+                    path_to_file = input("Введите путь(абсолютный) до файла:")
+                    data.append(request[KEY] + " " + path_to_file + "\n")
+                    db_to_write = open("DataBase.txt",'w')
+                    for row in data:
+                        db_to_write.write(row)
+                    db_to_write.close()
+            elif request[PATH] == "edit":
+                if request[KEY] not in keys:
+                    print("Ключ не найден. Проверьте ключ и попробуйте снова.")
+                else:
+                    for row in data:
+                        if row.lower().split()[key] == request[KEY]:
+                            data.remove(row)
+                    path_to_file = input("Введите новый путь(абсолютный) до файла:")
+                    data.append(request[KEY] + " " + path_to_file + "\n")
+                    db_to_write = open("DataBase.txt", 'w')
+                    for row in data:
+                        db_to_write.write(row)
+                    db_to_write.close()
+            elif request[PATH] == "keys":
+                for keyword in keys:
+                    print(keyword)
+            elif request[PATH] == "rm":
+                if request[KEY] not in keys:
+                    print("Ключ не найден. Проверьте ключ и попробуйте снова.")
+                else:
+                    for row in data:
+                        if row.lower().split()[key] == request[KEY]:
+                            data.remove(row)
+                    db_to_write = open("DataBase.txt", 'w')
+                    for row in data:
+                        db_to_write.write(row)
+                    db_to_write.close()
+            else:
+                db = open("DataBase.txt")
+                data = db.readlines()
+                it_is_key = False
+                for row in data:
+                    if row.lower().split()[key] == request[PATH]:
+                        it_is_key = True
+                        os.startfile(row.split()[key_path],'open')
+                if not it_is_key:
+                    os.startfile(request[PATH], 'open')
+        except:
+            print(bad_msg)
     elif request[COMMAND] == "rm":
         try:
-            os.remove(os.curdir,request[PATH])
+            os.remove(os.path.join(os.curdir,request[PATH]))
         except:
-            print("Файл не найден")
+            print("Файл не найден.")
     elif request[COMMAND] == "rmdir":
         try:
-            shutil.rmtree()
+            shutil.rmtree(os.path.join(os.curdir,request[PATH]))
+        except:
+            print("Директория не найдена.")
     else:
-        print("Command not found")
+        print("Команда не найдена.")
