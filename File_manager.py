@@ -1,13 +1,15 @@
 import os
-memory = open('memory.txt')
+
 dict = {}
-for line in memory:
-    num = line.find(' ')
-    rline = line[num+1:]
-    rline = rline.strip()
-    line = line.split()[0]
-    dict[line] = rline
-memory.close()
+if os.path.isfile('memory.txt'):
+    memory = open('memory.txt', 'r')
+    for line in memory:
+        num = line.find(' ')
+        rline = line[num+1:]
+        rline = rline.strip()
+        line = line.split()[0]
+        dict[line] = rline
+    memory.close()
 
 
 str = ''
