@@ -11,17 +11,15 @@ if os.path.isfile('memory.txt'):
         dict[line] = rline
     memory.close()
 
-
 str = ''
 
 while str != 'exit':
-    str = input()
+    str = input('Введите название файла: ')
 
     if str in dict:
         os.startfile(dict[str], 'open')
     else:
-        print('Введите путь к файлу:')
-        str1 = input()
+        str1 = input('Введите путь к файлу: ')
         memory = open('memory.txt', 'a')
         memory.write('\n' + str + ' ' + str1)
         dict[str] = str1
