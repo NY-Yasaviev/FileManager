@@ -184,8 +184,6 @@ while work:
 
             else:
                 key_or_path = rcmd[:num_of_first_space]
-                print(key_or_path)
-                print(keywords_dict)
                 is_key = False
                 for key, value in keywords_dict.items():
                     if key_or_path == key:
