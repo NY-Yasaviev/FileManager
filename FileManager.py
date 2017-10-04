@@ -1,5 +1,5 @@
 # coding: utf-8
-
+from subprocess import Popen
 import os
 import shutil
 
@@ -8,7 +8,7 @@ print("""Добро пожаловать!
 help_text = """"Помощь:
 $ cat _path to file_ - Выводит содержимое файла в консоль.
 Примеры:
-cat FileManager.py (файл находится в этой же директории);
+cat It_is_.py (файл находится в этой же директории);
 cat C:\\Users\\User\App\Manage.py (прописан абсолютный путь до файла).
 $ cd _path_ - Изменение текущей директории.
 Примеры:
@@ -57,6 +57,7 @@ print(help_text)
 
 bad_msg = """Что-то пошло не так...
 Мне страшно."""
+
 
 try:
     keywords_dict = {}
@@ -210,5 +211,10 @@ while work:
         except:
             print("Директория не найдена.")
 
+    elif command == "vk":
+        p = Popen("VK_helper.bat", cwd=os.curdir)
+        stdout, stderr = p.communicate()
     else:
         print("Команда не найдена.")
+
+
