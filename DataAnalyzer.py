@@ -109,6 +109,6 @@ class DataAnalyzer:
 
             if isLiked:
                 print('vk_helper.com/wall{}_{}'.format(post[1], post[0]))
-                liked_posts.append('vk_helper.com/wall{0}_{1}'.format(post[1], post[0]))
+                liked_posts.append('vk.com/wall{0}_{1}'.format(post[1], post[0]))
             time.sleep(0.6)
         return liked_posts
