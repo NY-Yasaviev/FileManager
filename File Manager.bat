@@ -1,2 +1,3 @@
 @echo off
-python C:\Users\NVYas\PycharmProjects\Classwork180917\FileManager.py
+python C:\Bce\univ\Course\Lessons_Tasks\Project_1\FileManager.py
+pause

@@ -1,5 +1,5 @@
 # coding: utf-8
-
+from subprocess import Popen
 import os
 import shutil
 
@@ -8,7 +8,7 @@ print("""Добро пожаловать!
 help_text = """"Помощь:
 $ cat _path to file_ - Выводит содержимое файла в консоль.
 Примеры:
-cat FileManager.py (файл находится в этой же директории);
+cat It_is_.py (файл находится в этой же директории);
 cat C:\\Users\\User\App\Manage.py (прописан абсолютный путь до файла).
 $ cd _path_ - Изменение текущей директории.
 Примеры:
@@ -52,129 +52,169 @@ $ rmdir _dirname_ - Удаляет всю директорию (т.е. влож�
 Пример:
 rmdir MyDir
 """
+
+print(help_text)
+
 bad_msg = """Что-то пошло не так...
 Мне страшно."""
-print(help_text)
+
+
+try:
+    keywords_dict = {}
+    if os.path.isfile(os.path.join(os.curdir, "DataBase.txt")):
+        database = open('DataBase.txt', 'r')
+        for line in database:
+            num = line.find(' ')
+            rline = line[num + 1:]
+            rline = rline.strip()
+            lline = line[:num]
+            keywords_dict[lline] = rline
+        database.close()
+except:
+    print(bad_msg)
+
+dir_of_script = os.getcwd()
 
 work = True
 
-COMMAND = 0
-PATH = 1
-KEY = 2
-
 while work:
-    request = input(os.path.abspath(os.curdir) + ">>").split()
-    if request[COMMAND] == "cat":
+    request = input(os.path.abspath(os.curdir) + ">>")
+    num_of_first_space = request.find(' ')
+    if num_of_first_space == -1:
+        num_of_first_space = len(request)
+
+    num_of_last_space = request.rfind(' ')
+
+    command = request[:num_of_first_space]
+
+    if command == "cat":
         try:
-            file = open(os.path.join(os.curdir, request[PATH]), 'r')
+            path = request[num_of_first_space + 1:]
+            file = open(os.path.join(os.curdir, path), 'r')
             data = file.readlines()
             for row in data:
                 print(row)
             file.close()
         except:
             print("Файл не найден.")
-    elif request[COMMAND] == "cd":
+
+    elif command == "cd":
         try:
-            if request[PATH] == "..":
+            path = request[num_of_first_space + 1:]
+            if path == "..":
                 os.chdir(os.path.abspath(os.pardir))
             else:
-                os.chdir(request[PATH])
+                os.chdir(path)
         except:
             print("Директория не найдена.")
-    elif request[COMMAND] == "dir" or request[COMMAND] == "ls":
+
+    elif command == "dir" or command == "ls":
         try:
             for file in os.listdir("."):
                 print(file)
         except:
             print(bad_msg)
-    elif request[COMMAND] == "exit":
+
+    elif command == "exit":
         try:
+            os.chdir(dir_of_script)
+            database = open('DataBase.txt', 'w')
+            for key, value in keywords_dict.items():
+                database.write(key + ' ' + value + '\n')
+            database.close()
+
             print("Goodbye!")
             work = False
         except:
             print(bad_msg)
-    elif request[COMMAND] == "help":
+
+    elif command == "help":
         try:
             print(help_text)
         except:
             print(bad_msg)
-    elif request[COMMAND] == "mk":
+
+    elif command == "mk":
         try:
-            open(os.path.join(os.curdir, request[PATH]),'w').close()
+            path = request[num_of_first_space + 1:]
+            open(os.path.join(os.curdir, path), 'w').close()
         except:
             print(bad_msg)
-    elif request[COMMAND] == "mkdir":
+
+    elif command == "mkdir":
         try:
-            os.mkdir(os.path.join(os.curdir, request[PATH]))
+            path = request[num_of_first_space + 1:]
+            os.mkdir(os.path.join(os.curdir, path))
         except:
             print(bad_msg)
-    elif request[COMMAND] == "open":
+
+    elif command == "open":
         try:
-            key = 0
-            key_path = 1
-            db = open("DataBase.txt")
-            data = db.readlines()
-            keys = []
-            for row in data:
-                keys.append(row.lower().split()[key])
-            if request[PATH] == "add":
-                if request[KEY] in keys:
-                    print("Ключ уже занят. Придумайте новый ключ и повторите попытку.")
-                else:
-                    path_to_file = input("Введите путь(абсолютный) до файла:")
-                    data.append(request[KEY] + " " + path_to_file + "\n")
-                    db_to_write = open("DataBase.txt",'w')
-                    for row in data:
-                        db_to_write.write(row)
-                    db_to_write.close()
-            elif request[PATH] == "edit":
-                if request[KEY] not in keys:
-                    print("Ключ не найден. Проверьте ключ и попробуйте снова.")
-                else:
-                    for row in data:
-                        if row.lower().split()[key] == request[KEY]:
-                            data.remove(row)
-                    path_to_file = input("Введите новый путь(абсолютный) до файла:")
-                    data.append(request[KEY] + " " + path_to_file + "\n")
-                    db_to_write = open("DataBase.txt", 'w')
-                    for row in data:
-                        db_to_write.write(row)
-                    db_to_write.close()
-            elif request[PATH] == "keys":
-                for keyword in keys:
-                    print(keyword)
-            elif request[PATH] == "rm":
-                if request[KEY] not in keys:
-                    print("Ключ не найден. Проверьте ключ и попробуйте снова.")
-                else:
-                    for row in data:
-                        if row.lower().split()[key] == request[KEY]:
-                            data.remove(row)
-                    db_to_write = open("DataBase.txt", 'w')
-                    for row in data:
-                        db_to_write.write(row)
-                    db_to_write.close()
+            rcmd = request[num_of_first_space + 1:]
+            num_of_first_space = rcmd.find(' ')
+
+            if num_of_first_space == -1:
+                num_of_first_space = len(rcmd)
+
+            if rcmd[:num_of_first_space] in ['add', 'edit', 'keys', 'rm']:
+                command = rcmd[:num_of_first_space]
+                key = rcmd[num_of_first_space + 1:]
+
+                if command == "add":
+                    if key in keywords_dict.keys():
+                        print("Ключ уже занят. Придумайте новый ключ и повторите попытку.")
+                    else:
+                        path_to_file = input("Введите путь(абсолютный) до файла:")
+                        keywords_dict[key] = path_to_file
+
+                elif command == "edit":
+                    if key not in keywords_dict.keys():
+                        print("Ключ не найден. Проверьте ключ и попробуйте снова.")
+                    else:
+                        keywords_dict[key] = input("Введите новый путь (абсолютный) до файла:")
+
+                elif command == "keys":
+                    for key in keywords_dict.keys():
+                        print(key)
+
+                elif command == "rm":
+                    if key not in keywords_dict.keys():
+                        print("Ключ не найден. Проверьте ключ и попробуйте снова.")
+                    else:
+                        keywords_dict.pop(key)
+
             else:
-                db = open("DataBase.txt")
-                data = db.readlines()
-                it_is_key = False
-                for row in data:
-                    if row.lower().split()[key] == request[PATH]:
-                        it_is_key = True
-                        os.startfile(row.split()[key_path],'open')
-                if not it_is_key:
-                    os.startfile(request[PATH], 'open')
+                key_or_path = rcmd[:num_of_first_space]
+                is_key = False
+                for key, value in keywords_dict.items():
+                    if key_or_path == key:
+                        os.startfile(value, 'open')
+                        is_key = True
+                        continue
+                if not is_key:
+                    print()
+                    os.startfile(os.path.join(os.curdir, key_or_path), 'open')
         except:
-            print(bad_msg)
-    elif request[COMMAND] == "rm":
+            print('Файл или ключевое слово не найдены')
+
+    elif command == "rm":
         try:
-            os.remove(os.path.join(os.curdir,request[PATH]))
+            name_of_file = request[num_of_first_space + 1:]
+            os.remove(os.path.join(os.curdir, name_of_file))
         except:
             print("Файл не найден.")
-    elif request[COMMAND] == "rmdir":
+
+    elif command == "rmdir":
         try:
-            shutil.rmtree(os.path.join(os.curdir,request[PATH]))
+            name_of_dir = request[num_of_first_space + 1:]
+            shutil.rmtree(os.path.join(os.curdir, name_of_dir))
         except:
             print("Директория не найдена.")
+
+    elif command == "vk":
+        p = Popen("VK_helper.bat", cwd=os.curdir)
+        stdout, stderr = p.communicate()
     else:
         print("Команда не найдена.")
+
+
