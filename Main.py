@@ -5,7 +5,7 @@ from DataAnalyzer import DataAnalyzer
 from DataCollector import DataCollector
 
 session = vk.AuthSession(
-    access_token="5a74d7cf875dcbf7c033705e56ee4afa50da8951bd8e131aab2055c076b6e43045f64933690099888e9b4")
+    access_token="your access token")
 cmd = ''
 vk_api = vk.API(session)
 
